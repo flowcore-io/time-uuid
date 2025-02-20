@@ -81,6 +81,23 @@ describe("TimeUuid", () => {
     })
   })
 
+  describe("#getBefore()", function () {
+    it("should get the before value of the Uuid representation", function () {
+      let val = new TimeUuid(new Date(), 1, "host01", "AA")
+      let valBefore = val.getBefore()
+
+      assertEquals(val.getDatePrecision().date.getTime(), valBefore.getDatePrecision().date.getTime())
+      assertEquals(val.getDatePrecision().ticks, 1)
+      assertEquals(valBefore.getDatePrecision().ticks, 0)
+
+      val = new TimeUuid(new Date(), 0, "host01", "AA")
+      valBefore = val.getBefore()
+      assertEquals(val.getDatePrecision().date.getTime() - 1, valBefore.getDatePrecision().date.getTime())
+      assertEquals(val.getDatePrecision().ticks, 0)
+      assertEquals(valBefore.getDatePrecision().ticks, 9999)
+    })
+  })
+
   describe("fromDate()", function () {
     it("should generate v1 uuids that do not collide", function () {
       const values: Record<string, boolean> = {}

@@ -153,6 +153,11 @@ export class TimeUuid extends Uuid {
   getNodeIdString(): string {
     return this.buffer.subarray(10).toString("ascii")
   }
+
+  getBefore(): TimeUuid {
+    const { date: beforeDate, ticks } = this.getDatePrecision()
+    return TimeUuid.fromDate(beforeDate, ticks - 1, this.getNodeId(), this.getClockId())
+  }
 }
 
 // Helper functions
