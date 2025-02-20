@@ -21,11 +21,17 @@ import { Buffer } from "node:buffer"
 
 import { Uuid } from "./uuid.ts"
 
+/**
+ * Date with ticks
+ */
 interface DatePrecision {
   date: Date
   ticks: number
 }
 
+/**
+ * Time with ticks
+ */
 interface TimeWithTicks {
   time: number
   ticks: number
@@ -66,6 +72,26 @@ let _ticksForCurrentTime = 0
  */
 let _lastTimestamp = 0
 
+/**
+ * Creates a new instance of Uuid based on the parameters provided according to rfc4122.
+ * If any of the arguments is not provided, it will be randomly generated, except for the date that will use the current
+ * date.
+ * <p>
+ *   Note that when nodeId and/or clockId portions are not provided, the constructor will generate them using
+ *   <code>crypto.randomBytes()</code>. As it's possible that <code>crypto.randomBytes()</code> might block, it's
+ *   recommended that you use the callback-based version of the static methods <code>fromDate()</code> or
+ *   <code>now()</code> in that case.
+ * </p>
+ * @class
+ * @classdesc Represents an immutable version 1 universally unique identifier (UUID). A UUID represents a 128-bit value.
+ * <p>Usage: <code>TimeUuid.now()</code></p>
+ * @param {Date|Buffer} [value] The datetime or buffer for the instance, if not provided, it will use the current Date.
+ * @param {Number} [ticks] A number from 0 to 10000 representing the 100-nanoseconds units for this instance to fill in the information not available in the Date,
+ * as Ecmascript Dates have only milliseconds precision.
+ * @param {String|Buffer} [nodeId] A 6-length Buffer or string of 6 ascii characters representing the node identifier, ie: 'host01'.
+ * @param {String|Buffer} [clockId] A 2-length Buffer or string of 6 ascii characters representing the clock identifier.
+ * @constructor
+ */
 export class TimeUuid extends Uuid {
   /**
    * Creates a new instance of TimeUuid based on the parameters provided according to rfc4122.
@@ -88,6 +114,14 @@ export class TimeUuid extends Uuid {
     super(buffer)
   }
 
+  /**
+   * Creates a new instance of TimeUuid based on the date provided.
+   * @param {Date} date The date to create the TimeUuid from.
+   * @param {Number} [ticks] A number from 0 to 10000 representing the 100-nanoseconds units for this instance to fill in the information not available in the Date,
+   * as Ecmascript Dates have only milliseconds precision.
+   * @param {String|Buffer} [nodeId] A 6-length Buffer or string of 6 ascii characters representing the node identifier, ie: 'host01'.
+   * @param {String|Buffer} [clockId] A 2-length Buffer or string of 6 ascii characters representing the clock identifier.
+   */
   static fromDate(
     date?: Date,
     ticks?: number,
@@ -97,18 +131,31 @@ export class TimeUuid extends Uuid {
     return new TimeUuid(date, ticks, nodeId, clockId)
   }
 
+  /**
+   * Creates a new instance of TimeUuid based on the string provided.
+   * @param {string} value The string to create the TimeUuid from.
+   */
   static override fromString(value: string): TimeUuid {
     return new TimeUuid(Uuid.fromString(value).getBuffer())
   }
 
+  /**
+   * Returns the smaller possible type 1 uuid with the provided Date.
+   */
   static min(date: Date, ticks?: number): TimeUuid {
     return new TimeUuid(date, ticks, minNodeId, minClockId)
   }
 
+  /**
+   * Returns the biggest possible type 1 uuid with the provided Date.
+   */
   static max(date: Date, ticks?: number): TimeUuid {
     return new TimeUuid(date, ticks, maxNodeId, maxClockId)
   }
 
+  /**
+   * Returns the current timeuuid.
+   */
   static now(
     nodeId?: string | Buffer,
     clockId?: string | Buffer,
@@ -116,6 +163,9 @@ export class TimeUuid extends Uuid {
     return TimeUuid.fromDate(undefined, undefined, nodeId, clockId)
   }
 
+  /**
+   * Returns the date precision (date and ticks) of the uuid.
+   */
   getDatePrecision(): DatePrecision {
     const timeLow = this.buffer.readUInt32BE(0)
 
@@ -138,22 +188,37 @@ export class TimeUuid extends Uuid {
     }
   }
 
+  /**
+   * Returns the date of the uuid.
+   */
   getDate(): Date {
     return this.getDatePrecision().date
   }
 
+  /**
+   * Returns the node id of the uuid.
+   */
   getNodeId(): Buffer {
     return this.buffer.subarray(10)
   }
 
+  /**
+   * Returns the clock id of the uuid.
+   */
   getClockId(): Buffer {
     return this.buffer.subarray(8, 10)
   }
 
+  /**
+   * Returns the node id of the uuid as a string.
+   */
   getNodeIdString(): string {
     return this.buffer.subarray(10).toString("ascii")
   }
 
+  /**
+   * Returns a timeUuid with the same date and clock id but with the ticks decremented by 1.
+   */
   getBefore(): TimeUuid {
     const { date: beforeDate, ticks } = this.getDatePrecision()
     return TimeUuid.fromDate(beforeDate, ticks - 1, this.getNodeId(), this.getClockId())
