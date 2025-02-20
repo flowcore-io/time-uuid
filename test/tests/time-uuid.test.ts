@@ -1,7 +1,7 @@
-import { assertEquals } from "jsr:@std/assert/equals"
+import { assertEquals } from "jsr:@std/assert"
 import { describe, it } from "jsr:@std/testing/bdd"
-import { TimeUuid } from "../../src/mod.ts"
 import { Buffer } from "node:buffer"
+import { TimeUuid } from "../../src/mod.ts"
 
 describe("TimeUuid", () => {
   describe("constructor()", () => {
