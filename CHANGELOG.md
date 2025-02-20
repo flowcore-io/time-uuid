@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/flowcore-io/time-uuid/compare/v0.1.0...v0.1.1) (2025-02-20)
+
+
+### Bug Fixes
+
+* add getBefore ([30f266a](https://github.com/flowcore-io/time-uuid/commit/30f266aa23282922a3cfbf4bf6d5d037b08ae0d5))
+
 ## [0.1.0](https://github.com/flowcore-io/time-uuid/compare/v0.0.1...v0.1.0) (2025-02-20)
 
 
