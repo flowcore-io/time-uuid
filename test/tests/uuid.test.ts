@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertInstanceOf, assertThrows } from "jsr:@std/assert"
+import { assertEquals, assertInstanceOf, assertThrows } from "jsr:@std/assert"
 import { describe, it } from "jsr:@std/testing/bdd"
 import { Buffer } from "node:buffer"
 import { Uuid } from "../../src/mod.ts"
