@@ -54,8 +54,8 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("#getDatePrecision()", function () {
-    it("should get the Date and ticks of the Uuid representation", function () {
+  describe("#getDatePrecision()", () => {
+    it("should get the Date and ticks of the Uuid representation", () => {
       let date = new Date()
       let val = new TimeUuid(date, 1)
       assertEquals(val.getDatePrecision().ticks, 1)
@@ -69,8 +69,8 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("#getNodeId()", function () {
-    it("should get the node id of the Uuid representation", function () {
+  describe("#getNodeId()", () => {
+    it("should get the node id of the Uuid representation", () => {
       let val = new TimeUuid(new Date(), 0, Buffer.from([1, 2, 3, 4, 5, 6]))
       assertEquals(val.getNodeId() instanceof Buffer, true)
       assertEquals(val.getNodeId().toString("hex"), "010203040506")
@@ -81,7 +81,7 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("#getBefore()", function () {
+  describe("#getBefore()", () => {
     it("should get the before value of the Uuid representation", function () {
       let val = new TimeUuid(new Date(), 1, "host01", "AA")
       let valBefore = val.getBefore()
@@ -98,7 +98,25 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("fromDate()", function () {
+  describe("#isBefore()", () => {
+    it("should return true if the first uuid is before the second", () => {
+      const val1 = new TimeUuid(new Date(2020, 0, 1, 0, 0, 0, 0))
+      const val2 = new TimeUuid(new Date(2020, 0, 1, 0, 0, 0, 1))
+      assertEquals(val1.isBefore(val2), true)
+      assertEquals(val2.isBefore(val1), false)
+    })
+  })
+
+  describe("#isAfter()", () => {
+    it("should return true if the first uuid is after the second", () => {
+      const val1 = new TimeUuid(new Date(2020, 0, 1, 0, 0, 0, 0))
+      const val2 = new TimeUuid(new Date(2020, 0, 1, 0, 0, 0, 1))
+      assertEquals(val1.isAfter(val2), false)
+      assertEquals(val2.isAfter(val1), true)
+    })
+  })
+
+  describe("fromDate()", () => {
     it("should generate v1 uuids that do not collide", function () {
       const values: Record<string, boolean> = {}
       const length = 50000
@@ -121,7 +139,7 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("fromString()", function () {
+  describe("fromString()", () => {
     it("should parse the string representation", function () {
       const text = "3d555680-9886-11e4-8101-010101010101"
       const val = TimeUuid.fromString(text)
@@ -131,7 +149,7 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("now()", function () {
+  describe("now()", () => {
     it("should pass the nodeId when provided", function () {
       const val = TimeUuid.now("h12345")
       assertEquals(val.getNodeIdString(), "h12345")
@@ -153,17 +171,46 @@ describe("TimeUuid", () => {
     })
   })
 
-  describe("min()", function () {
+  describe("min()", () => {
     it("should generate uuid with the minimum node and clock id values", function () {
       const val = TimeUuid.min(new Date())
       assertEquals(val.getNodeId().toString("hex"), "808080808080")
     })
   })
 
-  describe("max()", function () {
+  describe("max()", () => {
     it("should generate uuid with the maximum node and clock id values", function () {
       const val = TimeUuid.max(new Date())
       assertEquals(val.getNodeId().toString("hex"), "7f7f7f7f7f7f")
+    })
+  })
+
+  describe("sortAscending()", () => {
+    const timeUuids = [
+      { expectedOrder: 2, id: TimeUuid.fromDate(new Date(2020, 0, 2, 0, 0, 0, 0), 2).toString() },
+      { expectedOrder: 1, id: TimeUuid.fromDate(new Date(2020, 0, 2, 0, 0, 0, 0), 1).toString() },
+      { expectedOrder: 0, id: TimeUuid.fromDate(new Date(2020, 0, 1, 0, 0, 0, 0)).toString() },
+      { expectedOrder: 3, id: TimeUuid.fromDate(new Date(2020, 0, 3, 0, 0, 0, 0)).toString() },
+    ]
+
+    it("should sort the timeUuids in ascending order", () => {
+      const sorted = structuredClone(timeUuids).sort((a, b) =>
+        TimeUuid.sortAscending(TimeUuid.fromString(a.id), TimeUuid.fromString(b.id))
+      )
+      assertEquals(sorted[0].expectedOrder, 0)
+      assertEquals(sorted[1].expectedOrder, 1)
+      assertEquals(sorted[2].expectedOrder, 2)
+      assertEquals(sorted[3].expectedOrder, 3)
+    })
+
+    it("should sort the timeUuids in descending order", () => {
+      const sorted = structuredClone(timeUuids).sort((a, b) =>
+        TimeUuid.sortDescending(TimeUuid.fromString(a.id), TimeUuid.fromString(b.id))
+      )
+      assertEquals(sorted[0].expectedOrder, 3)
+      assertEquals(sorted[1].expectedOrder, 2)
+      assertEquals(sorted[2].expectedOrder, 1)
+      assertEquals(sorted[3].expectedOrder, 0)
     })
   })
 })

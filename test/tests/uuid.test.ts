@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "jsr:@std/assert"
+import { assert, assertEquals, assertInstanceOf, assertThrows } from "jsr:@std/assert"
 import { describe, it } from "jsr:@std/testing/bdd"
 import { Buffer } from "node:buffer"
 import { Uuid } from "../../src/mod.ts"
@@ -9,7 +9,7 @@ describe("Uuid", () => {
       assertThrows(function () {
         return new Uuid(Buffer.allocUnsafe(10))
       })
-      new Uuid(Buffer.allocUnsafe(16))
+      assertInstanceOf(new Uuid(Buffer.allocUnsafe(16)), Uuid)
     })
   })
 
@@ -57,7 +57,10 @@ describe("Uuid", () => {
       assertThrows(function () {
         Uuid.fromString("zzb1ccdd-eeff-0011-2233-445566778800")
       })
-      assertEquals(Uuid.fromString("acb1ccdd-eeff-0011-2233-445566778813").toString(), "acb1ccdd-eeff-0011-2233-445566778813")
+      assertEquals(
+        Uuid.fromString("acb1ccdd-eeff-0011-2233-445566778813").toString(),
+        "acb1ccdd-eeff-0011-2233-445566778813",
+      )
     })
     it("should contain a valid internal representation", function () {
       let val = Uuid.fromString("acb1ccdd-eeff-0011-2233-445566778813")

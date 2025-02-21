@@ -164,6 +164,31 @@ export class TimeUuid extends Uuid {
   }
 
   /**
+   * Sorts two TimeUuid instances in ascending order.
+   * @param {TimeUuid} a - The first TimeUuid instance.
+   * @param {TimeUuid} b - The second TimeUuid instance.
+   * @returns {number} - A negative number if a is before b, a positive number if a is after b, or 0 if they are equal.
+   */
+  static sortAscending(a: TimeUuid, b: TimeUuid): number {
+    const aPrecision = a.getDatePrecision()
+    const bPrecision = b.getDatePrecision()
+    if (aPrecision.date.getTime() !== bPrecision.date.getTime()) {
+      return aPrecision.date.getTime() - bPrecision.date.getTime()
+    }
+    return aPrecision.ticks - bPrecision.ticks
+  }
+
+  /**
+   * Sorts two TimeUuid instances in descending order
+   * @param {TimeUuid} a - The first TimeUuid instance.
+   * @param {TimeUuid} b - The second TimeUuid instance.
+   * @returns {number} - A negative number if a is before b, a positive number if a is after b, or 0 if they are equal.
+   */
+  static sortDescending(a: TimeUuid, b: TimeUuid): number {
+    return TimeUuid.sortAscending(b, a)
+  }
+
+  /**
    * Returns the date precision (date and ticks) of the uuid.
    */
   getDatePrecision(): DatePrecision {
@@ -222,6 +247,26 @@ export class TimeUuid extends Uuid {
   getBefore(): TimeUuid {
     const { date: beforeDate, ticks } = this.getDatePrecision()
     return TimeUuid.fromDate(beforeDate, ticks - 1, this.getNodeId(), this.getClockId())
+  }
+
+  /**
+   * Returns true if this TimeUuid represents a time before the other TimeUuid, comparing both the date and ticks.
+   * @param other The TimeUuid to compare against
+   */
+  isBefore(other: TimeUuid): boolean {
+    return this.getDatePrecision().date.getTime() < other.getDatePrecision().date.getTime() ||
+      (this.getDatePrecision().date.getTime() === other.getDatePrecision().date.getTime() &&
+        this.getDatePrecision().ticks < other.getDatePrecision().ticks)
+  }
+
+  /**
+   * Returns true if this TimeUuid represents a time after the other TimeUuid, comparing both the date and ticks.
+   * @param other The TimeUuid to compare against
+   */
+  isAfter(other: TimeUuid): boolean {
+    return this.getDatePrecision().date.getTime() > other.getDatePrecision().date.getTime() ||
+      (this.getDatePrecision().date.getTime() === other.getDatePrecision().date.getTime() &&
+        this.getDatePrecision().ticks > other.getDatePrecision().ticks)
   }
 }
 
