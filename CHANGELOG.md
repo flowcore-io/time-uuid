@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/flowcore-io/time-uuid/compare/v0.1.2...v0.2.0) (2025-02-21)
+
+
+### Features
+
+* add sorting methods, isBefore and isAfter ([fc7ccf2](https://github.com/flowcore-io/time-uuid/commit/fc7ccf2dcf3bba155732e09e1134dca95163f4bb))
+
+
+### Bug Fixes
+
+* remove unused import ([506f7ed](https://github.com/flowcore-io/time-uuid/commit/506f7ed9284c615447376688b124c7f71d6c60e5))
+
 ## [0.1.2](https://github.com/flowcore-io/time-uuid/compare/v0.1.1...v0.1.2) (2025-02-20)
 
 
